@@ -22,7 +22,8 @@
             <div class="bg-amber-100 rounded-2xl shadow-md p-4 hover:shadow-xl transition">
                 <a wire:navigate href="/hotel/{{ $hotel->id }}/details" class="block space-y-3">
                     <div class="overflow-hidden rounded-lg">
-                        <img src="{{ asset('storage/' . $hotel->thumbnail) }}" alt="{{ $hotel->name }}"
+                        <img src="{{ $hotel->thumbnail ? asset('storage/' . $hotel->thumbnail) : asset('storage/placeholder-image.png') }}"
+                            alt="{{ $hotel->name }}"
                             class="h-48 w-full object-cover transition duration-500 ease-in-out hover:scale-105">
                     </div>
 

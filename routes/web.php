@@ -37,14 +37,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/hotelAll', HotelAll::class);
+Route::get('/hotelAll', HotelAll::class)->name('hotel.all');
 Route::get('/hotel/{id}/details', HotelDetails::class)->name('hotel.details');
-Route::get('/roomTypeList', RoomList::class);
-Route::get('/bookingDetails', BookingDetails::class);
-Route::get('/about', About::class);
+Route::get('/roomTypeList', RoomList::class)->name('hotel.room.list');
+Route::get('/bookingDetails', BookingDetails::class)->name('booking.details');
+Route::get('/about', About::class)->name('about');
 
 Route::post('/midtrans/notification', [App\Http\Controllers\MidtransController::class, 'notification']);
-
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/hotelList', HotelList::class);

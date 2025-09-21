@@ -194,14 +194,14 @@
                 @endguest
 
                 @auth
-                    <a wire:navigate href="{{ route('dashboard') }}"
+                    {{-- <a wire:navigate href="{{ route('dashboard') }}"
                         class="relative font-bold text-sm px-3 py-2 text-amber-800 
           after:content-[''] after:absolute after:left-0 after:bottom-0 
           after:w-0 after:h-[2px] after:bg-amber-800 
           after:transition-all after:duration-300 after:ease-in-out
           hover:after:w-full">
                         Profile
-                    </a>
+                    </a> --}}
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"

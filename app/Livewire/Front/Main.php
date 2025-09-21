@@ -21,9 +21,14 @@ class Main extends Component
     public function render()
     {
         return view('livewire.front.main', [
-            'hotels' => Hotel::where('name', 'like', '%' . $this->search . '%')
-                ->orWhere('address', 'like', '%' . $this->search . '%')
-                ->orWhere('city', 'like', '%' . $this->search . '%')
+            'hotels' => Hotel::with('rooms')
+                ->when($this->search, function ($query) {
+                    $query->where(function ($q) {
+                        $q->where('name', 'like', '%' . $this->search . '%')
+                            ->orWhere('address', 'like', '%' . $this->search . '%')
+                            ->orWhere('city', 'like', '%' . $this->search . '%');
+                    });
+                })
                 ->orderByRaw("CASE WHEN status = 'active' THEN 1 ELSE 2 END")
                 ->paginate(4),
             'room_types' => RoomType::paginate(4),

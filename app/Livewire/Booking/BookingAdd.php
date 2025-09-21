@@ -14,19 +14,11 @@ class BookingAdd extends Component
     public $hotel_id, $room_id, $check_in_date, $check_out_date, $total_price, $status, $guest_name, $guest_email, $guest_phone, $description;
     public $filteredRooms = [];
 
-    // Cache room data to avoid repeated queries
-    private $roomCache = null;
-
     public function updatedHotelId($value)
     {
         $this->room_id = null; //reset room selection
-        $this->roomCache = null; // Clear cache
-
         if ($value) {
-            // OPTIMIZED: Load rooms with their room_type in one query
-            $this->filteredRooms = Room::with(['room_type', 'hotel'])
-                ->where('hotel_id', $value)
-                ->get();
+            $this->filteredRooms = Room::with('room_types', 'hotel')->where('hotel_id', $value)->get();
         } else {
             $this->filteredRooms = [];
         }
@@ -35,17 +27,8 @@ class BookingAdd extends Component
     public function updatedRoomId($value)
     {
         $this->calculateTotalPrice();
-
-        if ($value) {
-            // OPTIMIZED: Use cached room or load with eager loading
-            if (!$this->roomCache || $this->roomCache->id != $value) {
-                $this->roomCache = Room::with(['room_type', 'hotel'])->find($value);
-            }
-            $this->description = $this->roomCache ? $this->roomCache->room_type->description : '';
-        } else {
-            $this->description = '';
-            $this->roomCache = null;
-        }
+        $room = Room::with('room_type', 'hotel')->find($value);
+        $this->description = $room ? $room->room_type->description : '';
     }
 
     public function updatedCheckInDate()
@@ -72,19 +55,16 @@ class BookingAdd extends Component
     public function calculateTotalPrice()
     {
         if ($this->room_id && $this->check_in_date && $this->check_out_date) {
-            // OPTIMIZED: Use cached room or load with room_type
-            if (!$this->roomCache || $this->roomCache->id != $this->room_id) {
-                $this->roomCache = Room::with('room_type')->find($this->room_id);
-            }
-
-            if ($this->roomCache && $this->roomCache->room_type) {
+            $room = Room::find($this->room_id);
+            if ($room) {
                 $days = $this->getDays();
-                $this->total_price = $this->roomCache->room_type->price * $days;
+                $this->total_price = $room->room_type->price * $days;
             }
         } else {
             $this->total_price = 0;
         }
     }
+
 
     public function save()
     {
@@ -101,8 +81,8 @@ class BookingAdd extends Component
             'guest_phone' => 'required|string|max_digits:15',
         ]);
 
-        // OPTIMIZED: Add user_id if authenticated (your model expects it)
-        $bookingData = [
+        //kirim data
+        Booking::create([
             'hotel_id' => $this->hotel_id,
             'room_id' => $this->room_id,
             'check_in_date' => $this->check_in_date,
@@ -112,14 +92,7 @@ class BookingAdd extends Component
             'guest_name' => $this->guest_name,
             'guest_email' => $this->guest_email,
             'guest_phone' => $this->guest_phone,
-        ];
-
-        // Add user_id if user is authenticated
-        if (Auth::check()) {
-            $bookingData['user_id'] = Auth::id();
-        }
-
-        Booking::create($bookingData);
+        ]);
 
         request()->session()->flash('success', 'Data success added!');
         //redirect
@@ -128,12 +101,10 @@ class BookingAdd extends Component
 
     public function render()
     {
-        // OPTIMIZED: Remove unnecessary eager loading in render method
-        // Only load what you actually need for the view
         return view('livewire.booking.booking-add', [
-            // Remove 'bookings' if not used in the view - this was loading ALL bookings unnecessarily
-            'hotels' => Hotel::select(['id', 'name', 'address', 'city'])->get(), // Only select needed columns
-            'rooms' => $this->filteredRooms, // Already optimized above
+            'bookings' => Booking::with('room', 'room_type', 'hotel')->all(),
+            'hotels' => Hotel::with('bookings', 'room_types')->all(),
+            'rooms' => $this->filteredRooms,
         ]);
     }
 }

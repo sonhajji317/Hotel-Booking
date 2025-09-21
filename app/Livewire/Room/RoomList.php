@@ -27,7 +27,7 @@ class RoomList extends Component
 
     public function delete($id)
     {
-        $this->room_details = Room::find($id);
+        $this->room_details = Room::with(['hotel', 'room_type'])->find($id);
         $this->room_details->delete();
         session()->flash('success', 'Room deleted successfully.');
         return $this->redirect('/roomList');
@@ -36,7 +36,7 @@ class RoomList extends Component
     public function render()
     {
         return view('livewire.room.room-list', [
-            'room_types' => RoomType::all(),
+            'room_types' => RoomType::with('rooms')->get(),
             'rooms' => Room::orderBy($this->sortField, $this->sortDirection)
                 ->paginate(10)
         ]);

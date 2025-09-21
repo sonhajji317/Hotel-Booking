@@ -8,14 +8,7 @@ use Livewire\Component;
 
 class Hero extends Component
 {
-    #[Validate('required|exists:hotels,id')]
-    public $hotel;
-
-    #[Validate('required|date|after_or_equal:today')]
-    public $check_in_date;
-
-    #[Validate('required|date|after:check_in_date')]
-    public $check_out_date;
+    public $hotel, $check_in_date, $check_out_date, $hotel_selected;
 
     public function mount()
     {
@@ -23,31 +16,31 @@ class Hero extends Component
         $this->check_out_date = date('Y-m-d', strtotime('+1 day'));
     }
 
+    public function placeholder()
+    {
+        return view('livewire.skeleton');
+    }
+
     public function searchHotelSelected()
     {
-        // Using attribute validation - no need to call validate() manually
-        $this->validate();
+        $this->validate([
+            'hotel' => 'required|exists:hotels,id',
+            'check_in_date' => 'required|date|after_or_equal:today',
+            'check_out_date' => 'required|date|after:check_in_date'
+        ]);
 
-        // OPTIMIZED: Add error handling for better UX
-        try {
-            return redirect()->route('hotel.details', [
-                'id' => $this->hotel,
-                'check_in_date' => $this->check_in_date,
-                'check_out_date' => $this->check_out_date,
-            ]);
-        } catch (\Exception $e) {
-            session()->flash('error', 'Unable to search hotels. Please try again.');
-        }
+        //redirect ke halaman hotel_details
+        return redirect()->route('hotel.details', [
+            'id' => $this->hotel,
+            'check_in_date' => $this->check_in_date,
+            'check_out_date' => $this->check_out_date,
+        ]);
     }
 
     public function render()
     {
-        // OPTIMIZED: Only load essential hotel data for dropdown/search
         return view('livewire.front.hero', [
-            'hotels' => Hotel::select(['id', 'name', 'city', 'address', 'rating'])
-                ->where('status', 'active') // Only show active hotels
-                ->orderBy('name') // Alphabetical order for better UX
-                ->get()
+            'hotels' => Hotel::all()
         ]);
     }
 }

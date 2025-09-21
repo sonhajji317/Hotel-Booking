@@ -17,7 +17,8 @@
                 <div class="bg-yellow-100 rounded-2xl shadow-md p-4 hover:shadow-xl hover:ring-2 hover:ring-yellow-300">
                     <a wire:navigate href="/hotel/{{ $hotel->id }}/details" class="block space-y-3">
                         <div class="overflow-hidden rounded-xl">
-                            <img src="{{ asset('storage/' . $hotel->thumbnail) }}" alt="{{ $hotel->name }}"
+                            <img src="{{ $hotel->thumbnail ? asset('storage/' . $hotel->thumbnail) : asset('storage/placeholder-image.png') }}"
+                                alt="{{ $hotel->name }}"
                                 class="h-48 w-full object-cover transition duration-500 ease-in-out hover:scale-105 origin-center">
                         </div>
                         <h4 class="text-lg font-semibold text-gray-800 text-center">{{ $hotel->name }}</h4>

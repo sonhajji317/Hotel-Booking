@@ -31,8 +31,8 @@
 
             <div class="space-y-4">
                 <!-- Hotel Thumbnail -->
-                <img src="{{ asset('storage/' . $hotel->thumbnail) }}" alt="{{ $hotel->name }}"
-                    class="object-cover w-full h-48 md:h-60 rounded-xl shadow-sm">
+                <img src="{{ $hotel->thumbnail ? asset('storage/' . $hotel->thumbnail) : asset('storage/placeholder-image.png') }}"
+                    alt="{{ $hotel->name }}" class="object-cover w-full h-48 md:h-60 rounded-xl shadow-sm">
 
                 <!-- Hotel Info -->
                 <h4 class="text-lg font-semibold text-gray-800">{{ $hotel->name }}</h4>
@@ -174,10 +174,10 @@
                         <label class="text-sm font-semibold text-gray-700">Room View</label>
                         @if ($selected_room && $selected_room->room_type->images_view)
                             <img src="{{ Storage::url($selected_room->room_type->images_view) }}" alt="Room View"
-                                class="w-full max-w-xs sm:max-w-md md:max-w-lg h-80 object-cover rounded-lg shadow">
+                                class="w-full max-w-xs sm:max-w-md md:max-w-lg h-64 md:h-80 object-cover rounded-lg shadow">
                         @else
                             <img src="{{ asset('images/placeholder-image.png') }}" alt="Room View"
-                                class="w-full max-w-xs sm:max-w-md md:max-w-lg h-80 object-cover rounded-lg shadow">
+                                class="w-full max-w-xs sm:max-w-md md:max-w-lg h-64 md:h-80 object-cover rounded-lg shadow">
                         @endif
                     </div>
 
@@ -189,10 +189,9 @@
                     </div>
 
                     <div>
-                        <span class="text-blue-700 text-sm bg-blue-100 font-bold px-2 py-1 rounded-full">Read the room
-                            description for
-                            more
-                            details!</span>
+                        <span class="text-blue-700 text-sm font-bold px-2 py-1 rounded-full">Did you read
+                            the description?</span>
+                        <input type="checkbox" class="text-blue-700 bg-blue-100 font-bold px-2 py-2 rounded" required>
                     </div>
 
                     <div class="mt-5 flex justify-end">

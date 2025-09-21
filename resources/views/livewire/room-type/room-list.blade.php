@@ -8,7 +8,8 @@
 
                     <!-- Gambar -->
                     <div class="overflow-hidden rounded-lg">
-                        <img alt="" src="{{ asset('storage/' . $room_type->images_view) }}"
+                        <img alt=""
+                            src="{{ $room_type->images_view ? asset('storage/' . $room_type->images_view) : asset('storage/placeholder-image/png') }}"
                             class="h-64 w-full object-cover transition duration-500 ease-in-out hover:scale-105" />
                     </div>
 
